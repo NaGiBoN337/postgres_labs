@@ -48,10 +48,13 @@ $$ LANGUAGE SQL;
 
 #sql ="ALTER TABLE hr.employees ADD location_id int4 NULL;"
 sql = "ALTER TABLE employees ADD CONSTRAINT mgr_emp_fkey FOREIGN KEY (location_id) REFERENCES locations  (location_id);"
-cursor.execute(sql)
-connection.commit()
-
-
+#cursor.execute(sql)
+#connection.commit()
+import random
+for i in range(54):
+    sql = "UPDATE hr.employees SET location_id=" + str(random.randint(1,10)) + " WHERE employee_id=" + str(i) + ";"
+    cursor.execute(sql)
+    connection.commit()
 
 connection.close()
 cursor.close()
