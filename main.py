@@ -56,5 +56,28 @@ for i in range(54):
     cursor.execute(sql)
     connection.commit()
 
+sql = """SELECT first_name, COUNT('first_name') as "count_top_name"
+from employees 
+group by first_name 
+ORDER BY 2 desc
+limit 1;"""
+selects = pd.read_sql_query(sql, connection)
+print(selects)
+print()
+print()
+sql = """SELECT employee_id,
+ job_id,
+ salary,
+ salary - (SELECT min(salary) FROM employees WHERE job_id = e.job_id) as difference
+FROM employees e
+GROUP BY e.employee_id, e.job_id
+HAVING  salary - (SELECT min(salary) FROM employees WHERE job_id = e.job_id) != 0
+ORDER BY difference
+limit 3;
+"""
+selects = pd.read_sql_query(sql, connection)
+print(selects)
+
+
 connection.close()
 cursor.close()
