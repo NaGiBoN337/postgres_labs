@@ -7,7 +7,8 @@ connection = psycopg2.connect(database="students",
  port="5432")
 
 cursor = connection.cursor()
-print(connection.get_dsn_parameters(), "\n")
+for i in connection.get_dsn_parameters():
+    print(i,":", connection.get_dsn_parameters()[i])
 sql = "SELECT * FROM jobs " # запрос SQL
 df = pd.read_sql_query("SELECT * FROM jobs ", connection)
 print(df)
