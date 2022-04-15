@@ -48,9 +48,35 @@ $$ LANGUAGE SQL;
 
 #sql ="ALTER TABLE hr.employees ADD location_id int4 NULL;"
 sql = "ALTER TABLE employees ADD CONSTRAINT mgr_emp_fkey FOREIGN KEY (location_id) REFERENCES locations  (location_id);"
-cursor.execute(sql)
-connection.commit()
+#cursor.execute(sql)
+#connection.commit()
+import random
+for i in range(54):
+    sql = "UPDATE hr.employees SET location_id=" + str(random.randint(1,10)) + " WHERE employee_id=" + str(i) + ";"
+    cursor.execute(sql)
+    connection.commit()
 
+sql = """SELECT first_name, COUNT('first_name') as "count_top_name"
+from employees 
+group by first_name 
+ORDER BY 2 desc
+limit 1;"""
+selects = pd.read_sql_query(sql, connection)
+print(selects)
+print()
+print()
+sql = """SELECT employee_id,
+ job_id,
+ salary,
+ salary - (SELECT min(salary) FROM employees WHERE job_id = e.job_id) as difference
+FROM employees e
+GROUP BY e.employee_id, e.job_id
+HAVING  salary - (SELECT min(salary) FROM employees WHERE job_id = e.job_id) != 0
+ORDER BY difference
+limit 3;
+"""
+selects = pd.read_sql_query(sql, connection)
+print(selects)
 
 
 connection.close()
