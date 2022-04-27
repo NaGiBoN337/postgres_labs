@@ -27,17 +27,36 @@ def sql_selects():
     order by 2;"""
 
     df1 = pd.read_sql_query(sql, connection)
-    #print(df1)
+
     sql = """
     select department_name,sum(salary) from employees 
     join departments d on employees.department_id = d.department_id
     group by employees.department_id,d.department_name;"""
 
     df2 = pd.read_sql_query(sql, connection)
-    #print(df2)
+
     return df1,df2
 
-def my_plt_show(df,title):
+
+def sql_select_location():
+    sql = """
+     select city,count(employee_id) from locations l 
+     join employees e on e.location_id  = l.location_id
+     group by city;"""
+    df1 = pd.read_sql_query(sql, connection)
+    return df1
+
+def sql_call_f():
+    sql = """SELECT * FROM select_dif_salary2(30,6000);"""
+    df1 = pd.read_sql_query(sql, connection)
+    sql = """SELECT * FROM sum_salary_departments(5000,30000);"""
+    df2 = pd.read_sql_query(sql, connection)
+    print(df1)
+    print(df2)
+    return df1,df2
+
+
+def my_plt_show_vert(df,title):
     colors = ["red" if i % 2 == 0 else "blue" for i in range(len(df[df.columns[1]]))]
     plt.title(title)
     plt.xlabel(df.columns[0])
@@ -45,11 +64,25 @@ def my_plt_show(df,title):
     plt.bar(df[df.columns[0]], height=df[df.columns[1]], color=colors)
     plt.show()
 
+def my_plt_show_hor(df,title):
+    colors = ["orange" if i % 2 == 0 else "purple" for i in range(len(df[df.columns[1]]))]
+    fig, ax = plt.subplots()
+    ax.barh( df[df.columns[0]],df[df.columns[1]], align='center',color=colors)
+    ax.set_yticks(df[df.columns[0]])
+    ax.set_yticklabels(df[df.columns[0]])
+    ax.invert_yaxis()  # labels read top-to-bottom
+    ax.set_title(title)
+    plt.show()
+
 df1, df2 = sql_selects()
 
-print(df1.columns)
-print(df2.columns)
+my_plt_show_vert(df1, "Разница между зарплатой начальников и средней зарплатой их подчиненных")
+my_plt_show_vert(df2, "Отдел и сумма зарплат")
 
+my_plt_show_hor(df1,"Разница между зарплатой начальников и средней зарплатой их подчиненных")
+my_plt_show_hor(df2,"Отдел и сумма зарплат")
 
-my_plt_show(df1, "Разница между зарплатой начальников и средней зарплатой их подчиненных")
-my_plt_show(df2, "Отдел и сумма зарплат")
+df3 = sql_select_location()
+my_plt_show_hor(df3, "Количество сотрудников в разных городах")
+
+sql_call_f()
